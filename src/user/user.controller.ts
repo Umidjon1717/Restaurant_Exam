@@ -13,7 +13,7 @@ import { resetPasswordDto } from './dto/reset_password.dto';
 @Controller('auth')
 export class UserController {
   constructor(private readonly authService: UserService) { }
-
+  
   @Post('sign-up')
   signUp(@Body() createAuthDto: SignUpAuthDto) {
     return this.authService.signUp(createAuthDto);
@@ -42,7 +42,6 @@ export class UserController {
   @UseGuards(AccessTokenGuard)
   @Get()
   @ApiQuery({ name: 'filter', required: false, description: 'Filter by email or username' })
-  @ApiQuery({ name: 'sortBy', required: false, description: 'Sort by field name' })
   @ApiQuery({ name: 'order', required: false, enum: ['asc', 'desc'], description: 'Order of sorting' })
   @ApiQuery({ name: 'page', required: false, description: 'Page number', example: 1 })
   @ApiQuery({ name: 'limit', required: false, description: 'Items per page', example: 10 })

@@ -14,11 +14,11 @@ export class UpdatePaymentDto extends PartialType(CreatePaymentDto) {
     @IsString()
     amount: string
 
-    @ApiProperty({enum:["CREDIT_CARD" ,"CASH" , "ONLINE"]})
+    @ApiProperty({enum:["credit_card" ,"cash" , "online"]})
     @IsString()
     method: PaymentMethod
 
-    @ApiProperty({enum:["PAID" , "PENDING"]})
+    @ApiProperty({enum:["paid" , "pending"]})
     @IsString()
     status: PaymentStatus
 

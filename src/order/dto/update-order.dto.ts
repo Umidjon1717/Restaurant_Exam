@@ -13,7 +13,7 @@ export class UpdateOrderDto extends PartialType(CreateOrderDto) {
     @IsString()
     totalPrice: string
 
-    @ApiProperty({enum:['PENDING', 'COMPLETED', 'CANCELLED']})
+    @ApiProperty({enum:['pending', 'completed', 'cancelled']})
     @IsString()
     status: OrderStatus
 }

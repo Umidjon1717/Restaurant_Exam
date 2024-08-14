@@ -8,7 +8,7 @@ export class SignUpAuthDto {
   @IsEmail()
   email: string
 
-  @ApiProperty()
+  @ApiProperty({default:null})
   @IsString()
   @IsOptional()
   avatar_id:string

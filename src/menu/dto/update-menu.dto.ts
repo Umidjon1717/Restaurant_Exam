@@ -8,8 +8,8 @@ export class UpdateMenuDto extends PartialType(CreateMenuDto) {
     @IsString()
     name: string
 
-    @ApiProperty()
-    @IsString()
+    @ApiProperty({default:null})
+    @IsOptional()
     file_id:string
 
     @ApiProperty()

@@ -6,8 +6,8 @@ export class CreateMenuDto {
     @IsString()
     name: string
 
-    @IsString() 
-    @ApiProperty()
+    @ApiProperty({default:null})
+    @IsOptional()
     file_id:string
 
     @ApiProperty()

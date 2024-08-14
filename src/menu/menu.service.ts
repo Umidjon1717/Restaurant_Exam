@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { PrismaService } from '../prisma.service';
-import { Menu } from '@prisma/client';
+import { Menu, Prisma } from '@prisma/client';
 
 @Injectable()
 export class MenuService{
@@ -15,8 +15,32 @@ export class MenuService{
     return menu
   }
 
-  async findAll() {
-    return this.prisma.menu.findMany()
+  async findAll(query: {
+    filter?: string;
+    order?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+  }) {
+    const { filter, order, page = 1, limit = 10 } = query;
+
+    const where: Prisma.MenuWhereInput = filter
+      ? {
+        OR: [
+          { name: { contains: filter, mode: 'insensitive' } },
+        ],
+      }
+      : {};
+
+
+    const total = await this.prisma.menu.count();
+
+    const items = await this.prisma.menu.findMany({
+      skip: (page - 1) * limit,
+      take: limit,
+      where: {}
+    });
+
+    return { total, items };
   }
 
   async findOne(id: string) {

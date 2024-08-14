@@ -11,7 +11,7 @@ export class CreateOrderDto {
     @IsString()
     totalPrice: string
 
-    @ApiProperty({enum:['PENDING', 'COMPLETED', 'CANCELLED']})
+    @ApiProperty({enum:['pending', 'completed', 'cancelled']})
     @IsString()
     status: OrderStatus
 }

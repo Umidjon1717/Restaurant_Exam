@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -63,14 +63,30 @@ export class UserService {
 
   async signUp(createAuthDto: SignUpAuthDto): Promise<Omit<Prisma.UserCreateInput, 'password'>> {
     const hashedPassword = await bcrypt.hash(createAuthDto.password, 10);
-    const user = await this.prisma.user.create({
-      data: {
-        ...createAuthDto,
-        password: hashedPassword,
-      },
-    });
-    const { password, ...result } = user;
-    return result;
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          ...createAuthDto,
+          password: hashedPassword,
+        },
+      });
+      const { password, ...result } = user;
+      return result;
+    } catch (error) {
+      console.error('Error creating user:', error);
+    
+      if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+        throw new HttpException(
+          'A user with this email already exists. Please use a different email.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    
+      throw new HttpException(
+        'There was a problem creating your account. Please try again later.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async signIn(signInDto: SignInAuthDto): Promise<{ accessToken: string; refreshToken: string }> {
@@ -193,9 +209,21 @@ export class UserService {
   }
 
   async remove(id: string) {
-    const user = await this.prisma.user.delete({
+    const user = await this.prisma.user.findUnique({
       where: { id },
     });
-    return user;
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const deleted=await this.prisma.deletedUsers.create({
+      data:user
+    })
+    console.log(deleted);
+    this.prisma.user.delete({
+      where: {
+        id,
+      },
+    });
+    return 'Logged out'
   }
 }
